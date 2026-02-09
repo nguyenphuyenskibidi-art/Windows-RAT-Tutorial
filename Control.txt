@@ -1,0 +1,71 @@
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#include <iostream>
+
+#pragma comment(lib, "ws2_32.lib")
+
+void StartControlPanel() {
+ WSADATAsaData;
+ SOCKET ControlSocket = INVALID_SOCKET;
+ struct sockaddr_in hint;
+
+ int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+ if (iResult != 0) {
+ std::cerr << "WStartup failed: " << iResult << std::endl;
+ return;
+ }
+
+ ControlSocket = socket(AF_INET, SOCK_STREAM, 0);
+ if (ControlSocket == INVALID_SOCKET) {
+ std::cerr << "Error at socket(): " << WSAGetError() << std::endl;
+ WSACleanup();
+ return;
+ }
+
+ hint.sin_family = AF_INET;
+ hint.sin_port = htons(54000);
+ hint.sin_addr.S_un.S_addr = INADDR_ANY;
+
+ iResult =(ControlSocket, (SOCKADDR*)&hint, sizeof(hint));
+ if (iResult == SOCKET_ERROR) {
+ std::cerr << "bind() failed: " << WSAGetLastError() << std::endl;
+ closesocket(ControlSocket);
+ WSleanup();
+ return;
+ }
+
+ iResult = listen(ControlSocket, SOMAXCONN);
+ if (iResult == SOCKET_ERROR) {
+ std::cerr << "Error at listen(): " << WSAGetLastError() << std::endl;
+ closesocket(ControlSocket);
+ WSACleanup();
+ return;
+ }
+
+ SOCKET ClientSocket = INVALID_SOCKET;
+ ClientSocket = accept(ControlSocket, NULL, NULL);
+ if (ClientSocket == INVALID_SOCKET) {
+ std::cerr << "accept failed: " WSAGetLastError() << std::endl;
+ closesocket(ControlSocket);
+ WSACleanup();
+ return;
+ }
+
+ char recvbuf[1024];
+ int recvbuflen = 1024;
+
+ do {
+ iResult = recvClientSocket, recvbuf, recvbuflen, 0);
+ if (iResult > 0) {
+ std::cout << "Bytes received: " << iResult << std::endl;
+ // Process the command
+ } else if (iResult == 0) {
+ std::cout << "Connection closing..." << std::endl;
+ } else {
+ std::cerr << "recv failed: " << WSAGetLastError() << std::endl;
+ }
+ } while (iResult > 0);
+
+ closesocket(ClientSocket);
+ WSACleanup();
+}

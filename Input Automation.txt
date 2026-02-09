@@ -1,0 +1,24 @@
+#include <windows.h>
+
+void MoveMouse(int x, int y) {
+ SetCursorPos(x, y);
+}
+
+void ClickMouse() {
+ mouse_event(MOUSEEVENTF_LEFTDOWN,0, 0, 0, 0);
+ mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+}
+
+void TypeText(const char* text) {
+ while (*text) {
+ INPUT inp = {0};
+ inp.type INPUT_KEYBOARD;
+ inp.ki.wScan = 0;
+ inp.ki.time = 0;
+ inp.ki.dwExtraInfo = 0;
+ inp.ki.wVk = VkKeyScan(*text);
+ inp.ki.dwFlags = KEYVENTF_UNICODE;
+ SendInput(1, &inp, sizeof(INPUT));
+ text++;
+ }
+}

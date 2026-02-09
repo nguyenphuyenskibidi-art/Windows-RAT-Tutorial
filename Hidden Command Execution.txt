@@ -1,0 +1,10 @@
+ <windows.h>
+
+void ExecuteCommand(const char* command) {
+ STARTUPINFO si = {sizeof(si)};
+ PROCESS_INFORMATION pi;
+ CreateProcess(NULL, const_cast<char*>(command), NULL, NULL, FALSE, 0, NULL, NULL, &si,pi);
+ WaitForSingleObject(pi.hProcess, INFINITE);
+ CloseHandle(pi.hProcess);
+ CloseHandle(pi.hThread);
+}
